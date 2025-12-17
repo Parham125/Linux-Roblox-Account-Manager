@@ -18,7 +18,7 @@ Before running this tool, you need to configure your system swap space to preven
 
 ### Setting Up Swap Space
 
-Each container uses up to 3GB of memory (512MB RAM + swap). To run multiple instances, you need adequate swap space. Recommended: **8GB or more**.
+Each container uses up to 3GB of memory (256MB RAM + swap). To run multiple instances, you need adequate swap space. Recommended: **8GB or more**.
 
 **Check current swap:**
 
@@ -219,9 +219,9 @@ This makes Sober think it's the only instance running!
 Each container is limited to:
 
 - **CPU:** 1 core maximum
-- **RAM:** 512MB physical memory
+- **RAM:** 256MB physical memory
 - **Memory+Swap:** 3GB total (includes RAM + swap)
-- **Shared Memory:** 512MB for graphics
+- **Shared Memory:** 256MB for graphics
 
 This allows you to run many instances on modest hardware!
 

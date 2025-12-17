@@ -129,9 +129,9 @@ docker run -d \
 --device /dev/dri \
 --device /dev/snd \
 --cpus="1.0" \
---memory="512m" \
+--memory="256m" \
 --memory-swap="3g" \
---shm-size="512m" \
+--shm-size="256m" \
 sober-multi
 if [ $? -eq 0 ]; then
 echo ""
@@ -182,9 +182,9 @@ docker run -d \
 --device /dev/dri \
 --device /dev/snd \
 --cpus="1.0" \
---memory="512m" \
+--memory="256m" \
 --memory-swap="3g" \
---shm-size="512m" \
+--shm-size="256m" \
 sober-multi-roblox
 if [ $? -eq 0 ]; then
 echo ""
