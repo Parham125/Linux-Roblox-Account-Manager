@@ -69,6 +69,32 @@ fi
 done
 echo ""
 }
+create_image_from_instance(){
+read -p "Enter instance number to create image from: " INSTANCE_NUM
+if [ -z "$INSTANCE_NUM" ]; then
+echo "❌ Instance number required!"
+return
+fi
+CONTAINER_NAME="sober-instance-$INSTANCE_NUM"
+if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+echo "❌ Instance $INSTANCE_NUM does not exist!"
+return
+fi
+IMAGE_NAME="sober-multi-roblox"
+echo "Creating image from instance $INSTANCE_NUM..."
+echo "This will save the current state including downloaded Roblox files."
+echo ""
+docker commit "$CONTAINER_NAME" "$IMAGE_NAME"
+if [ $? -eq 0 ]; then
+echo ""
+echo "✅ Image created successfully as '$IMAGE_NAME'!"
+echo "You can now create instances from this image using option 6."
+else
+echo ""
+echo "❌ Failed to create image from instance $INSTANCE_NUM"
+fi
+echo ""
+}
 run_instance(){
 read -p "Enter instance number to run: " INSTANCE_NUM
 if [ -z "$INSTANCE_NUM" ]; then
@@ -108,6 +134,57 @@ sober-multi
 if [ $? -eq 0 ]; then
 echo ""
 echo "✅ Instance $INSTANCE_NUM started successfully!"
+echo "Access at: http://localhost:$PORT/vnc.html"
+else
+echo ""
+echo "❌ Failed to start instance $INSTANCE_NUM"
+fi
+echo ""
+}
+run_instance_from_image(){
+if ! docker images --format '{{.Repository}}' | grep -q "^sober-multi-roblox$"; then
+echo "❌ Custom image 'sober-multi-roblox' not found!"
+echo "Please create an image first using option 5."
+return
+fi
+read -p "Enter instance number to run: " INSTANCE_NUM
+if [ -z "$INSTANCE_NUM" ]; then
+echo "❌ Instance number required!"
+return
+fi
+CONTAINER_NAME="sober-instance-$INSTANCE_NUM"
+PORT=$((6079+INSTANCE_NUM))
+if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+echo "❌ Instance $INSTANCE_NUM already exists!"
+read -p "Start existing instance? (y/n): " choice
+if [[ "$choice" == "y" ]]; then
+docker start "$CONTAINER_NAME"
+echo "✅ Instance $INSTANCE_NUM started!"
+echo "Access at: http://localhost:$PORT/vnc.html"
+fi
+return
+fi
+echo "Starting Sober instance $INSTANCE_NUM from custom image..."
+echo "Container name: $CONTAINER_NAME"
+echo "Web interface will be at: http://localhost:$PORT/vnc.html"
+echo ""
+docker run -d \
+--name $CONTAINER_NAME \
+--privileged \
+--cgroupns=host \
+-v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+-v ./sober-logs-$INSTANCE_NUM:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs \
+-p $PORT:6080 \
+--device /dev/dri \
+--device /dev/snd \
+--cpus="1.0" \
+--memory="512m" \
+--memory-swap="3g" \
+--shm-size="512m" \
+sober-multi-roblox
+if [ $? -eq 0 ]; then
+echo ""
+echo "✅ Instance $INSTANCE_NUM started successfully from custom image!"
 echo "Access at: http://localhost:$PORT/vnc.html"
 else
 echo ""
@@ -172,7 +249,9 @@ echo "1) List instances"
 echo "2) Run/Start instance"
 echo "3) Stop instance"
 echo "4) Remove instance"
-echo "5) Exit"
+echo "5) Create image from instance (save with Roblox)"
+echo "6) Run/Start instance from custom image"
+echo "0) Exit"
 echo ""
 read -p "Select option: " choice
 case $choice in
@@ -180,7 +259,9 @@ case $choice in
 2) run_instance ;;
 3) stop_instance ;;
 4) remove_instance ;;
-5) echo "Goodbye!"; exit 0 ;;
+5) create_image_from_instance ;;
+6) run_instance_from_image ;;
+0) echo "Goodbye!"; exit 0 ;;
 *) echo "❌ Invalid option!" ;;
 esac
 done

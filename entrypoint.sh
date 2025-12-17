@@ -13,7 +13,9 @@ sysctl -w vm.swappiness=100 2>/dev/null || echo "Note: Cannot set swappiness (re
 
 echo "Memory status:"
 free -h
-
+echo "Cleaning up stale files..."
+rm -f /run/dbus/pid /var/run/dbus/pid /run/dbus/system_bus_socket /var/run/dbus/system_bus_socket
+rm -rf /tmp/.X*-lock /tmp/.X11-unix/*
 echo "Starting system D-Bus..."
 mkdir -p /run/dbus
 dbus-daemon --system --fork

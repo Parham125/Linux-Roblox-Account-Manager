@@ -7,6 +7,8 @@ A Docker-based tool for running multiple Sober (Roblox on Linux) instances simul
 ✅ **Multiple Sober instances** - Run as many instances as you want (each in its own container)
 ✅ **Web-based access** - Control via your browser, no VNC client needed
 ✅ **No singleton detection** - Each container is fully isolated
+✅ **Modern GUI & CLI** - Beautiful GUI application or command-line interface
+✅ **Image cloning** - Create instances from pre-configured images with Roblox downloaded
 ✅ **Interactive management** - Easy-to-use menu system for managing instances
 ✅ **Auto-installation** - Automatically installs Docker if not present
 
@@ -19,12 +21,14 @@ Before running this tool, you need to configure your system swap space to preven
 Each container uses up to 3GB of memory (512MB RAM + swap). To run multiple instances, you need adequate swap space. Recommended: **8GB or more**.
 
 **Check current swap:**
+
 ```bash
 free -h
 swapon --show
 ```
 
 **Increase swap to 8GB (recommended):**
+
 ```bash
 # Turn off current swap
 sudo swapoff /swapfile
@@ -49,6 +53,7 @@ free -h
 ```
 
 **Make swap permanent (add to /etc/fstab if not already there):**
+
 ```bash
 # Check if already configured
 grep swapfile /etc/fstab
@@ -66,7 +71,41 @@ git clone https://github.com/YourUsername/Linux-Roblox-Account-Manager.git
 cd Linux-Roblox-Account-Manager
 ```
 
-### 2. Run the Manager
+### 2. Choose Your Interface
+
+#### Option A: GUI Application (Recommended)
+
+**Install dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Run the GUI:**
+
+```bash
+./gui.py
+# or
+python3.13 gui.py
+```
+
+**Build standalone executable (optional):**
+
+```bash
+./build.sh
+# Executable will be in dist/SoberManager
+```
+
+The GUI provides:
+
+- 🎨 Modern dark/light theme interface
+- 📊 Visual instance status indicators
+- 🔄 One-click refresh, start, stop, and remove
+- 🌐 Direct browser access buttons
+- 💾 Easy image creation and cloning
+- ⚡ Real-time instance management
+
+#### Option B: Command-Line Interface
 
 ```bash
 chmod +x run-instance.sh
@@ -74,11 +113,12 @@ chmod +x run-instance.sh
 ```
 
 The script will:
+
 - Automatically check and install Docker if needed
 - Build the Docker image
 - Show you an interactive menu
 
-### 3. Interactive Menu
+### 3. Interactive Menu (CLI)
 
 ```
 ╔══════════════════════════════════════╗
@@ -89,19 +129,32 @@ The script will:
 2) Run/Start instance
 3) Stop instance
 4) Remove instance
-5) Exit
+5) Create image from instance (save with Roblox)
+6) Run/Start instance from custom image
+0) Exit
 ```
 
 **To create a new instance:**
+
 1. Select option `2`
 2. Enter an instance number (e.g., `1`, `2`, `3`)
 3. The instance will start automatically
 
 **Access URLs:**
+
 - Instance 1: `http://localhost:6080/vnc.html`
 - Instance 2: `http://localhost:6081/vnc.html`
 - Instance 3: `http://localhost:6082/vnc.html`
 - Instance N: `http://localhost:60(79+N)/vnc.html`
+
+**To avoid re-downloading Roblox (Image Cloning):**
+
+1. Create a base instance (option `2`) and download Roblox in it
+2. Save it as an image (option `5` in CLI or "Save as Image" in GUI)
+3. Create new instances from this image (option `6` in CLI or "Create from Image" in GUI)
+4. All new instances will have Roblox pre-installed!
+
+This saves time and bandwidth when creating multiple instances.
 
 ## What is XFCE?
 
@@ -175,6 +228,7 @@ This allows you to run many instances on modest hardware!
 ## Port Mapping
 
 The script automatically handles port mapping:
+
 - Instance 1: Port 6080
 - Instance 2: Port 6081
 - Instance 3: Port 6082
@@ -189,6 +243,7 @@ Each instance automatically mounts its logs directory to your host machine:
 **Host path:** `./sober-logs-<instance-number>/`
 
 Examples:
+
 - Instance 1: Container logs → `./sober-logs-1/`
 - Instance 2: Container logs → `./sober-logs-2/`
 - Instance 3: Container logs → `./sober-logs-3/`
@@ -200,20 +255,24 @@ All Sober logs and data from each instance are automatically saved to these fold
 ### Using the Interactive Menu
 
 **List all instances:**
+
 - Select option `1` from the menu
 - Shows running and stopped instances with their URLs
 
 **Start/Run an instance:**
+
 - Select option `2`
 - Enter instance number
 - If exists: asks to start the stopped instance
 - If new: creates and starts a new instance
 
 **Stop instances:**
+
 - Select option `3`
 - Enter instance number or `all` to stop all instances
 
 **Remove instances:**
+
 - Select option `4`
 - Enter instance number or `all` to remove all instances
 - Confirms before removing
@@ -291,6 +350,7 @@ The script auto-installs Docker but requires you to log out and back in after in
 ### Change Resolution
 
 Edit the Dockerfile or add environment variable:
+
 ```bash
 docker run -d \
   -e VNC_RESOLUTION=2560x1440 \
@@ -300,11 +360,13 @@ docker run -d \
 ### Change VNC Password
 
 Edit `Dockerfile` and rebuild:
+
 ```dockerfile
 echo "your-password-here" | vncpasswd -f > /root/.vnc/passwd
 ```
 
 Then rebuild:
+
 ```bash
 docker build -t sober-multi -f Dockerfile .
 ```
@@ -330,6 +392,7 @@ When distributing or modifying this software, you must include proper attributio
 **Project**: Linux Roblox Account Manager
 
 Special thanks to:
+
 - VinegarHQ for Sober (Closed Source) - https://sober.vinegarhq.org/
 - Roblox Corporation
 - Docker and open source community
@@ -341,6 +404,7 @@ This tool is for educational purposes. Use at your own risk. The developers are 
 ## Contributing
 
 Contributions are welcome! Please ensure you:
+
 1. Follow the GPL v3 license terms
 2. Maintain attribution as specified in the NOTICE file
 3. Test your changes with multiple instances
