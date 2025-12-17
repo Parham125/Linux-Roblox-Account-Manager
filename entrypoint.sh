@@ -7,6 +7,12 @@ export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
 export MESA_GL_VERSION_OVERRIDE=4.5
 export MESA_GLSL_VERSION_OVERRIDE=450
+export __GLX_VENDOR_LIBRARY_NAME=mesa
+export VK_ICD_FILENAMES=""
+flatpak override --user --env=LIBGL_ALWAYS_SOFTWARE=1 org.vinegarhq.Sober 2>/dev/null || true
+flatpak override --user --env=GALLIUM_DRIVER=llvmpipe org.vinegarhq.Sober 2>/dev/null || true
+flatpak override --user --env=MESA_GL_VERSION_OVERRIDE=4.5 org.vinegarhq.Sober 2>/dev/null || true
+flatpak override --user --env=__GLX_VENDOR_LIBRARY_NAME=mesa org.vinegarhq.Sober 2>/dev/null || true
 
 echo "Configuring memory management..."
 sysctl -w vm.swappiness=100 2>/dev/null || echo "Note: Cannot set swappiness (requires privileged mode)"
