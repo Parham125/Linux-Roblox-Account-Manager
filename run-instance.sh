@@ -134,6 +134,9 @@ docker run -d \
 --shm-size="256m" \
 -e LIBGL_ALWAYS_SOFTWARE=1 \
 -e GALLIUM_DRIVER=llvmpipe \
+-e MESA_GL_VERSION_OVERRIDE=4.5 \
+-e __GLX_VENDOR_LIBRARY_NAME=mesa \
+-e EGL_PLATFORM=surfaceless \
 sober-multi
 if [ $? -eq 0 ]; then
 echo ""
@@ -189,6 +192,9 @@ docker run -d \
 --shm-size="256m" \
 -e LIBGL_ALWAYS_SOFTWARE=1 \
 -e GALLIUM_DRIVER=llvmpipe \
+-e MESA_GL_VERSION_OVERRIDE=4.5 \
+-e __GLX_VENDOR_LIBRARY_NAME=mesa \
+-e EGL_PLATFORM=surfaceless \
 sober-multi-roblox
 if [ $? -eq 0 ]; then
 echo ""
