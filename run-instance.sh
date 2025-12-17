@@ -132,6 +132,8 @@ docker run -d \
 --memory="256m" \
 --memory-swap="3g" \
 --shm-size="256m" \
+-e LIBGL_ALWAYS_SOFTWARE=1 \
+-e GALLIUM_DRIVER=llvmpipe \
 sober-multi
 if [ $? -eq 0 ]; then
 echo ""
@@ -185,6 +187,8 @@ docker run -d \
 --memory="256m" \
 --memory-swap="3g" \
 --shm-size="256m" \
+-e LIBGL_ALWAYS_SOFTWARE=1 \
+-e GALLIUM_DRIVER=llvmpipe \
 sober-multi-roblox
 if [ $? -eq 0 ]; then
 echo ""
