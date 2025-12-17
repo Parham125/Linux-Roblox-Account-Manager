@@ -46,18 +46,5 @@ echo "To launch Sober, open Terminal in the desktop and run:"
 echo "  flatpak run org.vinegarhq.Sober"
 echo ""
 echo "=========================================="
-(while true; do
-sleep 5
-LOG_DIR="/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs"
-if [ -L "$LOG_DIR/latest.log" ]; then
-target=$(readlink "$LOG_DIR/latest.log")
-if [[ "$target" == /* ]]; then
-basename_target=$(basename "$target")
-if [ -f "$LOG_DIR/$basename_target" ]; then
-rm -f "$LOG_DIR/latest.log"
-ln -s "$basename_target" "$LOG_DIR/latest.log"
-fi
-fi
-fi
-done) &
+
 tail -f /dev/null
