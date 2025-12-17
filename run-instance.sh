@@ -117,6 +117,8 @@ echo "Starting Sober instance $INSTANCE_NUM..."
 echo "Container name: $CONTAINER_NAME"
 echo "Web interface will be at: http://localhost:$PORT/vnc.html"
 echo ""
+mkdir -p "./sober-logs-$INSTANCE_NUM"
+chmod 777 "./sober-logs-$INSTANCE_NUM"
 docker run -d \
 --name $CONTAINER_NAME \
 --privileged \
@@ -168,6 +170,8 @@ echo "Starting Sober instance $INSTANCE_NUM from custom image..."
 echo "Container name: $CONTAINER_NAME"
 echo "Web interface will be at: http://localhost:$PORT/vnc.html"
 echo ""
+mkdir -p "./sober-logs-$INSTANCE_NUM"
+chmod 777 "./sober-logs-$INSTANCE_NUM"
 docker run -d \
 --name $CONTAINER_NAME \
 --privileged \

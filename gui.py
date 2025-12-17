@@ -5,6 +5,7 @@ import threading
 import webbrowser
 from tkinter import messagebox
 import re
+import os
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 class RobloxManager(ctk.CTk):
@@ -201,6 +202,9 @@ class RobloxManager(ctk.CTk):
 			port=6079+int(instance_num)
 			image_name="sober-multi-roblox" if from_image else "sober-multi"
 			image_type="custom image" if from_image else "base image"
+			log_dir=f"./sober-logs-{instance_num}"
+			os.makedirs(log_dir,exist_ok=True)
+			os.chmod(log_dir,0o777)
 			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs -p {port}:6080 --device /dev/dri --device /dev/snd --cpus=\"1.0\" --memory=\"512m\" --memory-swap=\"3g\" --shm-size=\"512m\" {image_name}"
 			stdout,stderr,code=self.run_docker_command(cmd)
 			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num,image_type,port))
