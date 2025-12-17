@@ -1,0 +1,37 @@
+# Sober logs
+sober-logs-*/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config files with sensitive data
+config.json
+
+# Temporary files
+*.tmp
+*.bak
+
+# Build artifacts
+*.o
+*.a
