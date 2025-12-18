@@ -2,7 +2,6 @@
 import customtkinter as ctk
 import subprocess
 import threading
-import webbrowser
 from tkinter import messagebox
 import re
 import os
@@ -40,10 +39,6 @@ class RobloxManager(ctk.CTk):
 		instance_label.pack(pady=(0,15))
 		create_btn=ctk.CTkButton(actions_container,text="➕ Create New Instance",height=40,font=ctk.CTkFont(size=14),fg_color="#28a745",hover_color="#218838",command=self.create_instance_dialog)
 		create_btn.pack(fill="x",pady=5)
-		create_image_btn=ctk.CTkButton(actions_container,text="🖼️ Create from Custom Image",height=40,font=ctk.CTkFont(size=14),fg_color="#6f42c1",hover_color="#5a31a1",command=self.create_from_image_dialog)
-		create_image_btn.pack(fill="x",pady=5)
-		save_image_btn=ctk.CTkButton(actions_container,text="� Save Instance as Image",height=40,font=ctk.CTkFont(size=14),fg_color="#fd7e14",hover_color="#e66a00",command=self.save_image_dialog)
-		save_image_btn.pack(fill="x",pady=5)
 		bulk_label=ctk.CTkLabel(actions_container,text="Bulk Operations",font=ctk.CTkFont(size=18,weight="bold"))
 		bulk_label.pack(pady=(25,15))
 		stop_all_btn=ctk.CTkButton(actions_container,text="⏹️ Stop All Instances",height=40,font=ctk.CTkFont(size=14),fg_color="#ffc107",hover_color="#e0a800",command=self.stop_all_instances)
@@ -122,13 +117,9 @@ class RobloxManager(ctk.CTk):
 			status_text="Running" if is_running else "Stopped"
 			status_label=ctk.CTkLabel(info_container,text=f"Status: {status_text}",font=ctk.CTkFont(size=12),text_color="gray",anchor="w")
 			status_label.pack(anchor="w")
-			url_label=ctk.CTkLabel(info_container,text=f"http://localhost:{port}/vnc.html",font=ctk.CTkFont(size=11),text_color="#007bff",anchor="w")
-			url_label.pack(anchor="w")
 			button_frame=ctk.CTkFrame(instance_frame,fg_color="transparent")
 			button_frame.pack(fill="x",padx=15,pady=(0,15))
 			if is_running:
-				open_btn=ctk.CTkButton(button_frame,text="🌐 Open Browser",width=120,fg_color="#007bff",hover_color="#0056b3",command=lambda p=port:self.open_browser(p))
-				open_btn.pack(side="left",padx=3)
 				stop_btn=ctk.CTkButton(button_frame,text="⏹️ Stop",width=100,fg_color="#ffc107",hover_color="#e0a800",command=lambda n=name:self.stop_instance(n))
 				stop_btn.pack(side="left",padx=3)
 			else:
@@ -137,8 +128,6 @@ class RobloxManager(ctk.CTk):
 			remove_btn=ctk.CTkButton(button_frame,text="🗑️ Remove",width=100,fg_color="#dc3545",hover_color="#c82333",command=lambda n=name,num=instance_num:self.remove_instance(n,num))
 			remove_btn.pack(side="left",padx=3)
 			self.instances.append({"name":name,"status":status,"port":port,"running":is_running})
-	def open_browser(self,port):
-		webbrowser.open(f"http://localhost:{port}/vnc.html")
 	def start_instance(self,name):
 		def task():
 			stdout,stderr,code=self.run_docker_command(f"docker start {name}")
@@ -178,68 +167,31 @@ class RobloxManager(ctk.CTk):
 		dialog=ctk.CTkInputDialog(text="Enter instance number:",title="Create Instance")
 		instance_num=dialog.get_input()
 		if instance_num and instance_num.isdigit():
-			self.create_instance(instance_num,False)
+			self.create_instance(instance_num)
 		elif instance_num:
 			messagebox.showerror("Error","Please enter a valid number")
-	def create_from_image_dialog(self):
-		stdout,stderr,code=self.run_docker_command("docker images --format '{{.Repository}}' | grep '^sober-multi-roblox$'")
-		if code!=0 or not stdout.strip():
-			messagebox.showerror("Error","Custom image 'sober-multi-roblox' not found!\nPlease create an image first using 'Save Instance as Image'.")
-			return
-		dialog=ctk.CTkInputDialog(text="Enter instance number:",title="Create from Image")
-		instance_num=dialog.get_input()
-		if instance_num and instance_num.isdigit():
-			self.create_instance(instance_num,True)
-		elif instance_num:
-			messagebox.showerror("Error","Please enter a valid number")
-	def create_instance(self,instance_num,from_image):
+	def create_instance(self,instance_num):
 		def task():
 			container_name=f"sober-instance-{instance_num}"
 			stdout,stderr,code=self.run_docker_command(f"docker ps -a --format '{{{{.Names}}}}' | grep '^{container_name}$'")
 			if stdout.strip():
 				self.after(0,lambda: messagebox.showerror("Error",f"Instance {instance_num} already exists!"))
 				return
-			port=6079+int(instance_num)
-			image_name="sober-multi-roblox" if from_image else "sober-multi"
-			image_type="custom image" if from_image else "base image"
 			log_dir=f"./sober-logs-{instance_num}"
 			os.makedirs(log_dir,exist_ok=True)
 			os.chmod(log_dir,0o777)
 			self.run_docker_command("xhost +local:docker")
 			display=os.environ.get("DISPLAY",":0")
-			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -e DISPLAY={display} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs --device /dev/dri --device /dev/snd --group-add video --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" {image_name}"
+			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -e DISPLAY={display} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs --device /dev/dri --device /dev/snd --group-add video --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" sober-multi"
 			stdout,stderr,code=self.run_docker_command(cmd)
-			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num,image_type))
+			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num))
 		threading.Thread(target=task,daemon=True).start()
-	def _handle_create_result(self,code,stderr,instance_num,image_type):
+	def _handle_create_result(self,code,stderr,instance_num):
 		if code==0:
-			messagebox.showinfo("Success",f"Instance {instance_num} created from {image_type}!\n\nSober window will appear on your desktop.")
+			messagebox.showinfo("Success",f"Instance {instance_num} created!\n\nSober window will appear on your desktop.")
 			self.refresh_instances()
 		else:
 			messagebox.showerror("Error",f"Failed to create instance:\n{stderr}")
-	def save_image_dialog(self):
-		dialog=ctk.CTkInputDialog(text="Enter instance number to save as image:",title="Save as Image")
-		instance_num=dialog.get_input()
-		if instance_num and instance_num.isdigit():
-			self.save_image(instance_num)
-		elif instance_num:
-			messagebox.showerror("Error","Please enter a valid number")
-	def save_image(self,instance_num):
-		def task():
-			container_name=f"sober-instance-{instance_num}"
-			stdout,stderr,code=self.run_docker_command(f"docker ps -a --format '{{{{.Names}}}}' | grep '^{container_name}$'")
-			if not stdout.strip():
-				self.after(0,lambda: messagebox.showerror("Error",f"Instance {instance_num} does not exist!"))
-				return
-			image_name="sober-multi-roblox"
-			stdout,stderr,code=self.run_docker_command(f"docker commit {container_name} {image_name}")
-			self.after(0,lambda: self._handle_save_image_result(code,stderr,image_name))
-		threading.Thread(target=task,daemon=True).start()
-	def _handle_save_image_result(self,code,stderr,image_name):
-		if code==0:
-			messagebox.showinfo("Success",f"Image created successfully as '{image_name}'!\n\nYou can now create instances from this image.")
-		else:
-			messagebox.showerror("Error",f"Failed to create image:\n{stderr}")
 	def stop_all_instances(self):
 		result=messagebox.askyesno("Confirm","Are you sure you want to stop all instances?")
 		if result:
