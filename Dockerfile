@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     flatpak xdg-desktop-portal xdg-desktop-portal-gtk \
     mesa-utils libgl1-mesa-dri libglx-mesa0 libegl-mesa0 \
     vulkan-tools libvulkan1 mesa-vulkan-drivers \
-    libosmesa6 libgl1-mesa-glx \
+    libosmesa6 libgl1 \
     dbus dbus-x11 \
     tigervnc-standalone-server tigervnc-common \
     novnc websockify \
