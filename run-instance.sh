@@ -109,25 +109,26 @@ read -p "Start existing instance? (y/n): " choice
 if [[ "$choice" == "y" ]]; then
 docker start "$CONTAINER_NAME"
 echo "✅ Instance $INSTANCE_NUM started!"
-echo "Access at: http://localhost:$PORT/vnc.html"
 fi
 return
 fi
 echo "Starting Sober instance $INSTANCE_NUM..."
 echo "Container name: $CONTAINER_NAME"
-echo "Web interface will be at: http://localhost:$PORT/vnc.html"
 echo ""
 mkdir -p "./sober-logs-$INSTANCE_NUM"
 chmod 777 "./sober-logs-$INSTANCE_NUM"
+xhost +local:docker 2>/dev/null || true
 docker run -d \
 --name $CONTAINER_NAME \
 --privileged \
 --cgroupns=host \
+-e DISPLAY=$DISPLAY \
+-v /tmp/.X11-unix:/tmp/.X11-unix \
 -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
 -v ./sober-logs-$INSTANCE_NUM:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs \
--p $PORT:6080 \
 --device /dev/dri \
 --device /dev/snd \
+--group-add video \
 --cpus="1.0" \
 --memory="256m" \
 --memory-swap="3g" \
@@ -136,7 +137,7 @@ sober-multi
 if [ $? -eq 0 ]; then
 echo ""
 echo "✅ Instance $INSTANCE_NUM started successfully!"
-echo "Access at: http://localhost:$PORT/vnc.html"
+echo "Sober window will appear on your desktop."
 else
 echo ""
 echo "❌ Failed to start instance $INSTANCE_NUM"
@@ -162,25 +163,26 @@ read -p "Start existing instance? (y/n): " choice
 if [[ "$choice" == "y" ]]; then
 docker start "$CONTAINER_NAME"
 echo "✅ Instance $INSTANCE_NUM started!"
-echo "Access at: http://localhost:$PORT/vnc.html"
 fi
 return
 fi
 echo "Starting Sober instance $INSTANCE_NUM from custom image..."
 echo "Container name: $CONTAINER_NAME"
-echo "Web interface will be at: http://localhost:$PORT/vnc.html"
 echo ""
 mkdir -p "./sober-logs-$INSTANCE_NUM"
 chmod 777 "./sober-logs-$INSTANCE_NUM"
+xhost +local:docker 2>/dev/null || true
 docker run -d \
 --name $CONTAINER_NAME \
 --privileged \
 --cgroupns=host \
+-e DISPLAY=$DISPLAY \
+-v /tmp/.X11-unix:/tmp/.X11-unix \
 -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
 -v ./sober-logs-$INSTANCE_NUM:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs \
--p $PORT:6080 \
 --device /dev/dri \
 --device /dev/snd \
+--group-add video \
 --cpus="1.0" \
 --memory="256m" \
 --memory-swap="3g" \
@@ -189,7 +191,7 @@ sober-multi-roblox
 if [ $? -eq 0 ]; then
 echo ""
 echo "✅ Instance $INSTANCE_NUM started successfully from custom image!"
-echo "Access at: http://localhost:$PORT/vnc.html"
+echo "Sober window will appear on your desktop."
 else
 echo ""
 echo "❌ Failed to start instance $INSTANCE_NUM"

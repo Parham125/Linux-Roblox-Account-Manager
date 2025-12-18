@@ -205,13 +205,15 @@ class RobloxManager(ctk.CTk):
 			log_dir=f"./sober-logs-{instance_num}"
 			os.makedirs(log_dir,exist_ok=True)
 			os.chmod(log_dir,0o777)
-			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs -p {port}:6080 --device /dev/dri --device /dev/snd --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" {image_name}"
+			self.run_docker_command("xhost +local:docker")
+			display=os.environ.get("DISPLAY",":0")
+			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -e DISPLAY={display} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs --device /dev/dri --device /dev/snd --group-add video --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" {image_name}"
 			stdout,stderr,code=self.run_docker_command(cmd)
-			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num,image_type,port))
+			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num,image_type))
 		threading.Thread(target=task,daemon=True).start()
-	def _handle_create_result(self,code,stderr,instance_num,image_type,port):
+	def _handle_create_result(self,code,stderr,instance_num,image_type):
 		if code==0:
-			messagebox.showinfo("Success",f"Instance {instance_num} created from {image_type}!\n\nAccess at: http://localhost:{port}/vnc.html")
+			messagebox.showinfo("Success",f"Instance {instance_num} created from {image_type}!\n\nSober window will appear on your desktop.")
 			self.refresh_instances()
 		else:
 			messagebox.showerror("Error",f"Failed to create instance:\n{stderr}")
