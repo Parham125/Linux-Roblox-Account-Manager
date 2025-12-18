@@ -15,7 +15,8 @@ sudo systemctl enable docker
 sudo usermod -aG docker $USER
 echo "✅ Docker installed successfully!"
 echo "⚠️  Please log out and log back in for group changes to take effect."
-read -p "Press Enter to continue..."
+echo "Then run this script again."
+exit 1
 elif command -v dnf &>/dev/null; then
 sudo dnf -y install dnf-plugins-core
 sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
@@ -25,7 +26,8 @@ sudo systemctl enable docker
 sudo usermod -aG docker $USER
 echo "✅ Docker installed successfully!"
 echo "⚠️  Please log out and log back in for group changes to take effect."
-read -p "Press Enter to continue..."
+echo "Then run this script again."
+exit 1
 else
 echo "❌ Unsupported package manager. Please install Docker manually."
 exit 1
