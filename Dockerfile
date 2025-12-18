@@ -17,12 +17,11 @@ RUN apt-get update && apt-get install -y \
     xfce4 xfce4-terminal \
     supervisor \
     ca-certificates \
-    gcc libgl-dev \
+    open-vm-tools open-vm-tools-desktop \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY gl_spoof.c /tmp/gl_spoof.c
-RUN gcc -shared -fPIC -o /usr/lib/gl_spoof.so /tmp/gl_spoof.c -ldl && rm /tmp/gl_spoof.c
+
 
 RUN flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
     flatpak install -y flathub org.vinegarhq.Sober
@@ -39,7 +38,7 @@ RUN mkdir -p /root/.config/autostart && \
     echo '[Desktop Entry]' > /root/.config/autostart/sober.desktop && \
     echo 'Type=Application' >> /root/.config/autostart/sober.desktop && \
     echo 'Name=Sober' >> /root/.config/autostart/sober.desktop && \
-    echo 'Exec=env LD_PRELOAD=/usr/lib/gl_spoof.so /usr/bin/flatpak run org.vinegarhq.Sober' >> /root/.config/autostart/sober.desktop && \
+    echo 'Exec=/usr/bin/flatpak run org.vinegarhq.Sober' >> /root/.config/autostart/sober.desktop && \
     echo 'Terminal=false' >> /root/.config/autostart/sober.desktop && \
     echo 'StartupNotify=true' >> /root/.config/autostart/sober.desktop
 
