@@ -17,8 +17,12 @@ RUN apt-get update && apt-get install -y \
     xfce4 xfce4-terminal \
     supervisor \
     ca-certificates \
+    gcc libgl-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+COPY gl_spoof.c /tmp/gl_spoof.c
+RUN gcc -shared -fPIC -o /usr/lib/gl_spoof.so /tmp/gl_spoof.c -ldl && rm /tmp/gl_spoof.c
 
 RUN flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
     flatpak install -y flathub org.vinegarhq.Sober
@@ -35,7 +39,7 @@ RUN mkdir -p /root/.config/autostart && \
     echo '[Desktop Entry]' > /root/.config/autostart/sober.desktop && \
     echo 'Type=Application' >> /root/.config/autostart/sober.desktop && \
     echo 'Name=Sober' >> /root/.config/autostart/sober.desktop && \
-    echo 'Exec=env LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe MESA_GL_VERSION_OVERRIDE=4.5 __GLX_VENDOR_LIBRARY_NAME=mesa /usr/bin/flatpak run --env=LIBGL_ALWAYS_SOFTWARE=1 --env=GALLIUM_DRIVER=llvmpipe --env=MESA_GL_VERSION_OVERRIDE=4.5 org.vinegarhq.Sober' >> /root/.config/autostart/sober.desktop && \
+    echo 'Exec=env LD_PRELOAD=/usr/lib/gl_spoof.so /usr/bin/flatpak run org.vinegarhq.Sober' >> /root/.config/autostart/sober.desktop && \
     echo 'Terminal=false' >> /root/.config/autostart/sober.desktop && \
     echo 'StartupNotify=true' >> /root/.config/autostart/sober.desktop
 

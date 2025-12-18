@@ -205,7 +205,7 @@ class RobloxManager(ctk.CTk):
 			log_dir=f"./sober-logs-{instance_num}"
 			os.makedirs(log_dir,exist_ok=True)
 			os.chmod(log_dir,0o777)
-			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs -p {port}:6080 --device /dev/dri --device /dev/snd --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" -e LIBGL_ALWAYS_SOFTWARE=1 -e GALLIUM_DRIVER=llvmpipe -e MESA_GL_VERSION_OVERRIDE=4.5 -e __GLX_VENDOR_LIBRARY_NAME=mesa -e EGL_PLATFORM=surfaceless {image_name}"
+			cmd=f"docker run -d --name {container_name} --privileged --cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v ./sober-logs-{instance_num}:/root/.var/app/org.vinegarhq.Sober/data/sober/sober_logs -p {port}:6080 --device /dev/dri --device /dev/snd --cpus=\"1.0\" --memory=\"256m\" --memory-swap=\"3g\" --shm-size=\"256m\" {image_name}"
 			stdout,stderr,code=self.run_docker_command(cmd)
 			self.after(0,lambda: self._handle_create_result(code,stderr,instance_num,image_type,port))
 		threading.Thread(target=task,daemon=True).start()
