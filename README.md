@@ -67,7 +67,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Parham125/Linux-Roblox-Account-Manager.git
+git clone https://github.com/Parham125/Linux-Roblox-Account-Manager
 cd Linux-Roblox-Account-Manager
 ```
 
