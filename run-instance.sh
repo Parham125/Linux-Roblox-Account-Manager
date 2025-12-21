@@ -171,7 +171,7 @@ echo ""
 }
 while true; do
 echo "╔══════════════════════════════════════╗"
-echo "║  Sober Multi-Instance Manager        ║"
+echo "║  Linux Roblox Account Manager        ║"
 echo "╚══════════════════════════════════════╝"
 echo ""
 echo "1) List instances"

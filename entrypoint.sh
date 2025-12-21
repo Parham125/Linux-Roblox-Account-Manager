@@ -7,8 +7,10 @@ echo "Memory status:"
 free -h
 echo "Installing/Updating Sober..."
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install -y flathub org.vinegarhq.Sober --no-deploy || true
+flatpak update -y org.vinegarhq.Sober --no-deploy || true
 flatpak install -y flathub org.vinegarhq.Sober || true
-flatpak update -y org.vinegarhq.Sober
+flatpak update -y org.vinegarhq.Sober || true
 echo "Cleaning up stale files..."
 rm -f /run/dbus/pid /var/run/dbus/pid /run/dbus/system_bus_socket /var/run/dbus/system_bus_socket
 echo "Starting system D-Bus..."
